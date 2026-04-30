@@ -1,5 +1,4 @@
 import Image from "next/image";
-import React from "react";
 const ArticleImage = ({
   banner,
 }: {
@@ -10,7 +9,7 @@ const ArticleImage = ({
 }) => {
   return (
     <Image
-      className="object-cover w-full md:w-[400px] h-[300px] rounded-2xl"
+      className="object-cover w-full md:w-100 h-75 rounded-2xl"
       src={banner.url}
       width={400}
       height={300}

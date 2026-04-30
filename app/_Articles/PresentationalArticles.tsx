@@ -67,6 +67,7 @@ const PresentationalArticles: React.FC<PresentationalArticlesProps> = ({
                   ? `/article/${article.slug}`
                   : `/dashboard/article/${article.slug}`
               }
+              onMouseEnter={() => router.prefetch(`/article/${article.slug}`)}
             >
               <h2 className="text-xl font-bold mt-2 mb-4 truncate max-w-full">
                 {article.title}
