@@ -1,8 +1,7 @@
 "use client";
-import React, { useState, useRef, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import PresentationalSearch from "./PresentationalSearch";
 const Page = () => {
   const [Open, setOpen] = useState(false);
@@ -20,7 +19,7 @@ const Page = () => {
     queryFn: async () => {
       if (!debouncedQuery) return { articles: [] };
       const res = await axios.get(
-        `/api/search/${encodeURIComponent(debouncedQuery)}`
+        `/api/search/${encodeURIComponent(debouncedQuery)}`,
       );
       return res.data;
     },
@@ -28,6 +27,7 @@ const Page = () => {
   });
   useEffect(() => {
     document.body.style.overflow = Open ? "hidden" : "auto";
+    window.history.pushState({ modal: true }, "");
     if (Open && inputRef.current) inputRef.current.focus();
     const handleSearchBarClose = (event: MouseEvent | KeyboardEvent) => {
       if (
@@ -47,24 +47,6 @@ const Page = () => {
       document.body.style.overflow = "auto";
     };
   }, [Open, query, queryClient]);
-  const router = useRouter();
-  useEffect(() => {
-    if (Open) {
-      window.history.pushState({ modal: true }, "");
-      const handlePopState = () => {
-        setOpen(false);
-        queryClient.cancelQueries({ queryKey: ["searchArticles", query] });
-      };
-      window.addEventListener("popstate", handlePopState);
-      return () => {
-        window.removeEventListener("popstate", handlePopState);
-        if (window.history.state?.modal) {
-          router.back();
-        }
-      };
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [Open]);
   return (
     <PresentationalSearch
       setOpen={setOpen}

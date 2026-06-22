@@ -51,7 +51,7 @@ const PresentationalSearch: React.FC<PresentationalSearchProps> = ({
               <ul className="space-y-1 overflow-y-auto max-h-52 bg-gray-800 rounded">
                 {data?.articles.length ? (
                   data.articles.map((article) => (
-                    <li key={article.slug}>
+                    <li onClick={() => setOpen(false)} key={article.slug}>
                       <Link
                         href={`/article/${article.slug}`}
                         className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-400 hover:bg-gray-700 hover:text-gray-200 transition-all"
