@@ -10,4 +10,5 @@ export type PresentationalSearchProps = {
   query: string;
   setQuery: React.Dispatch<React.SetStateAction<string>>;
   data: { articles: Article[] } | undefined;
+  isFetching: boolean;
 }

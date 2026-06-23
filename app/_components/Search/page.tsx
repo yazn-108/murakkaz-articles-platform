@@ -1,7 +1,7 @@
 "use client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import PresentationalSearch from "./PresentationalSearch";
 const Page = () => {
   const [Open, setOpen] = useState(false);
@@ -14,7 +14,7 @@ const Page = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
-  const { data } = useQuery({
+  const { data, isFetching } = useQuery({
     queryKey: ["searchArticles", debouncedQuery],
     queryFn: async () => {
       if (!debouncedQuery) return { articles: [] };
@@ -27,26 +27,47 @@ const Page = () => {
   });
   useEffect(() => {
     document.body.style.overflow = Open ? "hidden" : "auto";
-    window.history.pushState({ modal: true }, "");
-    if (Open && inputRef.current) inputRef.current.focus();
-    const handleSearchBarClose = (event: MouseEvent | KeyboardEvent) => {
-      if (
-        (event as KeyboardEvent).key === "Escape" ||
-        (containerRef.current &&
-          !containerRef.current.contains(event.target as Node))
-      ) {
-        setOpen(false);
-        queryClient.cancelQueries({ queryKey: ["searchArticles", query] });
-      }
-    };
-    document.addEventListener("click", handleSearchBarClose);
-    document.addEventListener("keydown", handleSearchBarClose);
+    if (Open && inputRef.current) {
+      inputRef.current.focus();
+      window.history.pushState({ modal: true }, "");
+    }
     return () => {
-      document.removeEventListener("click", handleSearchBarClose);
-      document.removeEventListener("keydown", handleSearchBarClose);
       document.body.style.overflow = "auto";
     };
-  }, [Open, query, queryClient]);
+  }, [Open]);
+  const handleClose = useCallback(() => {
+    setOpen(false);
+    queryClient.cancelQueries({
+      queryKey: ["searchArticles"],
+    });
+  }, [queryClient]);
+  useEffect(() => {
+    const handleClick = (event: MouseEvent) => {
+      if (
+        Open &&
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        handleClose();
+      }
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        handleClose();
+      }
+    };
+    const handlePopState = () => {
+      handleClose();
+    };
+    document.addEventListener("click", handleClick);
+    document.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("popstate", handlePopState);
+    return () => {
+      document.removeEventListener("click", handleClick);
+      document.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [Open, handleClose]);
   return (
     <PresentationalSearch
       setOpen={setOpen}
@@ -56,6 +77,7 @@ const Page = () => {
       query={query}
       setQuery={setQuery}
       data={data}
+      isFetching={isFetching}
     />
   );
 };
