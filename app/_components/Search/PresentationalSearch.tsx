@@ -12,7 +12,6 @@ const PresentationalSearch: React.FC<PresentationalSearchProps> = ({
   data,
   isFetching,
 }) => {
-  console.log(isFetching);
   return (
     <>
       <button
