@@ -1,5 +1,5 @@
 import { getColl } from "@/lib/mongodb";
-import { generalRateLimiter } from "@/lib/rateLimiter";
+import { tagsRateLimiter } from "@/lib/rateLimiter";
 import {
   createSafeQuery,
   logSuspiciousActivity,
@@ -10,7 +10,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(request: NextRequest) {
   try {
     // Rate Limiting
-    const rateLimit = generalRateLimiter(request);
+    const rateLimit = tagsRateLimiter(request);
     if (!rateLimit.allowed) {
       return NextResponse.json(
         {

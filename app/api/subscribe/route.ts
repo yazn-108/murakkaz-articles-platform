@@ -1,5 +1,5 @@
 import { getColl } from '@/lib/mongodb';
-import { generalRateLimiter } from '@/lib/rateLimiter';
+import { subscribeRateLimiter } from '@/lib/rateLimiter';
 import {
   logSuspiciousActivity,
   validateEmail
@@ -11,7 +11,7 @@ import { promisify } from 'util';
 export const POST = async (request: NextRequest) => {
   try {
     // Rate Limiting
-    const rateLimit = generalRateLimiter(request);
+    const rateLimit = subscribeRateLimiter(request);
     if (!rateLimit.allowed) {
       return NextResponse.json(
         {

@@ -88,11 +88,47 @@ export const rateLimiter = (options: {
     return { allowed: true };
   };
 };
+// Rate Limiter for search
 export const searchRateLimiter = rateLimiter({
   windowMs: 60 * 1000,
   maxRequests: 30, // 30 requests per minute
   message: 'تم تجاوز حد طلبات البحث، حاول مرة أخرى لاحقاً',
-  requestEndPoint: '/api/search'
+  requestEndPoint: 'search'
+});
+// Rate Limiter for article details
+export const articleRateLimiter = rateLimiter({
+  windowMs: 1000 * 60 * 5, // 5 minutes
+  maxRequests: 30, // 30 requests per minute
+  message: 'تم تجاوز حد طلبات استدعاء المقالة، حاول مرة أخرى لاحقاً',
+  requestEndPoint: 'article-details'
+});
+// Rate Limiter for confirm
+export const confirmRateLimiter = rateLimiter({
+  windowMs: 1000 * 60 * 3, // 3 minutes
+  maxRequests: 5, // 5 requests per 3 minutes
+  message: 'تم تجاوز حد عدد مرات التحقق، حاول مرة أخرى لاحقاً',
+  requestEndPoint: 'confirm'
+});
+// Rate Limiter for subscribe
+export const subscribeRateLimiter = rateLimiter({
+  windowMs: 1000 * 60 * 3, // 3 minutes
+  maxRequests: 5, // 5 requests per 3 minutes
+  message: 'تم تجاوز حد عدد مرات طلب الاشتراك، حاول مرة أخرى لاحقاً',
+  requestEndPoint: 'subscribe'
+});
+// Rate Limiter for unsubscribe
+export const unsubscribeRateLimiter = rateLimiter({
+  windowMs: 1000 * 60 * 3, // 3 minutes
+  maxRequests: 5, // 5 requests per 3 minutes
+  message: 'تم تجاوز حد عدد مرات طلب إلغاء الاشتراك، حاول مرة أخرى لاحقاً',
+  requestEndPoint: 'unsubscribe'
+});
+// Rate Limiter for tags
+export const tagsRateLimiter = rateLimiter({
+  windowMs: 1000 * 60 * 3, // 3 minutes
+  maxRequests: 50, // 50 requests per 3 minutes
+  message: 'تم تجاوز حد عدد مرات طلب العلامات، حاول مرة أخرى لاحقاً',
+  requestEndPoint: 'tags'
 });
 // Rate Limiter for connection
 export const contactRateLimiter = rateLimiter({

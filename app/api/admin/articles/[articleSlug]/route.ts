@@ -2,7 +2,7 @@ import BackupArticles from "@/hooks/BackupArticles";
 import IsAdmin from "@/hooks/IsAdmin";
 import cloudinary from "@/lib/cloudinary";
 import { getColl } from "@/lib/mongodb";
-import { generalRateLimiter } from "@/lib/rateLimiter";
+import { articleRateLimiter } from "@/lib/rateLimiter";
 import {
   createSafeQuery,
   logSuspiciousActivity,
@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
   }
   try {
     // Rate Limiting
-    const rateLimit = generalRateLimiter(request);
+    const rateLimit = articleRateLimiter(request);
     if (!rateLimit.allowed) {
       return NextResponse.json(
         {

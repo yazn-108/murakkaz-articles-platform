@@ -1,5 +1,5 @@
 import { getColl } from "@/lib/mongodb";
-import { generalRateLimiter } from "@/lib/rateLimiter";
+import { unsubscribeRateLimiter } from "@/lib/rateLimiter";
 import {
   logSuspiciousActivity,
   sanitizeText
@@ -9,7 +9,7 @@ import { NextRequest, NextResponse } from "next/server";
 export const POST = async (request: NextRequest) => {
   try {
     // Rate Limiting
-    const rateLimit = generalRateLimiter(request);
+    const rateLimit = unsubscribeRateLimiter(request);
     if (!rateLimit.allowed) {
       return NextResponse.json(
         {
