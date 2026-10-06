@@ -139,6 +139,7 @@ export const contactRateLimiter = rateLimiter({
 // Rate Limiter عام
 export const generalRateLimiter = rateLimiter({
   windowMs: 1000 * 60 * 15, // 15 minutes
-  maxRequests: 100, // 100 requests per 15 minutes
-  message: 'تم تجاوز حد الطلبات، حاول مرة أخرى لاحقاً'
+  maxRequests: 200, // 200 requests per 15 minutes
+  message: 'تم تجاوز حد الطلبات، حاول مرة أخرى لاحقاً',
+  requestEndPoint: 'general'
 });
