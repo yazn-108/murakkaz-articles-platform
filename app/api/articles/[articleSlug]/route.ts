@@ -1,23 +1,19 @@
 import { getColl } from "@/lib/mongodb";
 import { generalRateLimiter } from "@/lib/rateLimiter";
-import {
-  createSafeQuery,
-  logSuspiciousActivity,
-  sanitizeInput,
-  validateSlug
-} from "@/lib/security";
+import { createSafeQuery, logSuspiciousActivity, sanitizeInput, validateSlug } from "@/lib/security";
 import { NextRequest, NextResponse } from "next/server";
 export async function GET(request: NextRequest) {
   try {
     // Rate Limiting
-    const rateLimitResult = generalRateLimiter(request);
-    if (!rateLimitResult.allowed) {
+    const rateLimit = generalRateLimiter(request);
+    if (!rateLimit.allowed) {
       return NextResponse.json(
         {
-          error: rateLimitResult.message,
-          retryAfter: rateLimitResult.retryAfter
+          success: rateLimit.allowed,
+          message: rateLimit.message,
+          retryAfter: rateLimit.retryAfter
         },
-        { status: 429 }
+        { status: rateLimit.status }
       );
     }
     const url = new URL(request.url);

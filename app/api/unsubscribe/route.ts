@@ -9,15 +9,15 @@ import { NextRequest, NextResponse } from "next/server";
 export const POST = async (request: NextRequest) => {
   try {
     // Rate Limiting
-    const rateLimitResult = generalRateLimiter(request);
-    if (!rateLimitResult.allowed) {
+    const rateLimit = generalRateLimiter(request);
+    if (!rateLimit.allowed) {
       return NextResponse.json(
         {
-          success: false,
-          message: rateLimitResult.message,
-          retryAfter: rateLimitResult.retryAfter
+          success: rateLimit.allowed,
+          message: rateLimit.message,
+          retryAfter: rateLimit.retryAfter
         },
-        { status: 429 }
+        { status: rateLimit.status }
       );
     }
     const { token } = await request.json();

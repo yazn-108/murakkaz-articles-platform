@@ -11,16 +11,16 @@ import { promisify } from "util";
 export const POST = async (req: NextRequest) => {
   try {
     // Rate Limiting
-    const rateLimitResult = contactRateLimiter(req);
-    if (!rateLimitResult.allowed) {
+    const rateLimit = contactRateLimiter(req);
+    if (!rateLimit.allowed) {
       return NextResponse.json(
         {
-          success: false,
-          message: rateLimitResult.message,
-          retryAfter: rateLimitResult.retryAfter,
+          success: rateLimit.allowed,
+          message: rateLimit.message,
+          retryAfter: rateLimit.retryAfter,
           type: "error"
         },
-        { status: 429 }
+        { status: rateLimit.status }
       );
     }
     const { name, email, message } = await req.json();

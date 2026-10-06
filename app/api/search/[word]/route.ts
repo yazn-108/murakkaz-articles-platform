@@ -1,10 +1,6 @@
 import { getColl } from "@/lib/mongodb";
 import { searchRateLimiter } from "@/lib/rateLimiter";
-import {
-  logSuspiciousActivity,
-  sanitizeSearchQuery,
-  validateSearchQuery
-} from "@/lib/security";
+import { logSuspiciousActivity, sanitizeSearchQuery, validateSearchQuery } from "@/lib/security";
 import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
   try {
@@ -15,11 +11,11 @@ export async function GET(req: NextRequest) {
     if (!rateLimit.allowed) {
       return NextResponse.json(
         {
-          success: false,
+          success: rateLimit.allowed,
           message: rateLimit.message,
           retryAfter: rateLimit.retryAfter,
         },
-        { status: 429 }
+        { status: rateLimit.status }
       );
     }
     // =========================
@@ -66,7 +62,7 @@ export async function GET(req: NextRequest) {
     const limit = 50;
     // =========================
     // 6. Atlas Search
-    // =========================
+    // // =========================
     const results = await collection.aggregate([
       {
         $search: {

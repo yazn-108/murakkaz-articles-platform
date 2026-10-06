@@ -57,10 +57,12 @@ export const rateLimiter = (options: {
   windowMs: number;
   maxRequests: number;
   message?: string;
+  requestEndPoint?: string;
 }) => {
-  const { windowMs, maxRequests, message = 'Too many requests' } = options;
-  return (req: NextRequest): { allowed: boolean; message?: string; retryAfter?: number } => {
-    const endpoint = req.nextUrl.pathname; const clientIP = getClientIP(req);
+  const { windowMs, maxRequests, message = 'Too many requests', requestEndPoint } = options;
+  return (req: NextRequest): { allowed: boolean; message?: string; retryAfter?: number; status?: number } => {
+    const endpoint = requestEndPoint || req.nextUrl.pathname;
+    const clientIP = getClientIP(req);
     const now = Date.now();
     const key = `${endpoint}:${clientIP}`;
     // Clean up expired data
@@ -74,12 +76,12 @@ export const rateLimiter = (options: {
       return { allowed: true };
     }
     if (store[key].count >= maxRequests) {
-      console.log(store)
       const retryAfter = Math.ceil((store[key].resetTime - now) / 1000);
       return {
         allowed: false,
         message,
-        retryAfter
+        retryAfter,
+        status: 429
       };
     }
     store[key].count++;
@@ -90,6 +92,7 @@ export const searchRateLimiter = rateLimiter({
   windowMs: 60 * 1000,
   maxRequests: 30, // 30 requests per minute
   message: 'تم تجاوز حد طلبات البحث، حاول مرة أخرى لاحقاً',
+  requestEndPoint: '/api/search'
 });
 // Rate Limiter for connection
 export const contactRateLimiter = rateLimiter({
