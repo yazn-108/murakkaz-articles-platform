@@ -60,9 +60,9 @@ export const rateLimiter = (options: {
 }) => {
   const { windowMs, maxRequests, message = 'Too many requests' } = options;
   return (req: NextRequest): { allowed: boolean; message?: string; retryAfter?: number } => {
-    const clientIP = getClientIP(req);
+    const endpoint = req.nextUrl.pathname; const clientIP = getClientIP(req);
     const now = Date.now();
-    const key = `${clientIP}:${Math.floor(now / windowMs)}`;
+    const key = `${endpoint}:${clientIP}`;
     // Clean up expired data
     cleanupExpiredEntries();
     // Check current limit
@@ -74,6 +74,7 @@ export const rateLimiter = (options: {
       return { allowed: true };
     }
     if (store[key].count >= maxRequests) {
+      console.log(store)
       const retryAfter = Math.ceil((store[key].resetTime - now) / 1000);
       return {
         allowed: false,
@@ -85,13 +86,12 @@ export const rateLimiter = (options: {
     return { allowed: true };
   };
 };
-// Rate Limiter for search (more restrictive)
 export const searchRateLimiter = rateLimiter({
   windowMs: 60 * 1000,
-  maxRequests: 10, // 10 requests per minute
-  message: 'تم تجاوز حد طلبات البحث، حاول مرة أخرى لاحقاً'
+  maxRequests: 30, // 30 requests per minute
+  message: 'تم تجاوز حد طلبات البحث، حاول مرة أخرى لاحقاً',
 });
-// Rate Limiter for connection (more restrictive)
+// Rate Limiter for connection
 export const contactRateLimiter = rateLimiter({
   windowMs: 5 * 60 * 1000,
   maxRequests: 10, // 10 requests per minute
@@ -99,7 +99,7 @@ export const contactRateLimiter = rateLimiter({
 });
 // Rate Limiter عام
 export const generalRateLimiter = rateLimiter({
-  windowMs: 15 * 60 * 1000,
-  maxRequests: 100, // 10 requests 15 minute
+  windowMs: 1000 * 60 * 15, // 15 minutes
+  maxRequests: 100, // 100 requests per 15 minutes
   message: 'تم تجاوز حد الطلبات، حاول مرة أخرى لاحقاً'
 });
