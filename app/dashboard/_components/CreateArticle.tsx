@@ -46,7 +46,7 @@ const CreateArticle = () => {
     const articleData: ArticleTY = {
       slug: data.slug as string,
       title: data.title as string,
-      tag: data.tag as string,
+      tag: (data.tag as string).toLowerCase(),
       description: data.description as string,
       createdAt: utcMidnight,
       SubscribersNotified: false,

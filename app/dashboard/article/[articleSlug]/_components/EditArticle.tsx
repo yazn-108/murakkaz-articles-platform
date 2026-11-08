@@ -143,7 +143,7 @@ const EditArticle = ({ article }: { article: ArticleTY }) => {
       ...article,
       slug: (data.slug as string) ?? article.slug,
       title: (data.title as string) ?? article.title,
-      tag: (data.tag as string) ?? article.tag,
+      tag: (data.tag as string).toLowerCase() ?? article.tag,
       description: (data.description as string) ?? article.description,
       createdAt: utcMidnight,
       SubscribersNotified: data["subscribers-notified"] === "on",
